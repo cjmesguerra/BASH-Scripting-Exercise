@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# Memory Check
+function memory_status {
+TOTAL_MEMORY=$(free  | grep Mem: | awk '{ printf("TOTAL: " $2) }')
+MEMORY_IN_USE=$(free | grep Mem: | awk '{ printf("IN USE: " $3 " (%.2f%)", $3/$2 * 100.0) }')
+FREE_MEMORY=$(free | grep Mem: | awk '{ printf("FREE: " $4 " (%.2f%)", $4/$2 * 100.0) }')
 
-# if no parameter provided, tell parameters to be provided
+echo $TOTAL_MEMORY
+echo $MEMORY_IN_USE
+echo $FREE_MEMORY
+}
 
 function parameter {
-        echo "How to Use: $(basename $0) [-cwe]" 2>&1
+        echo "Usage: $(basename $0) [-cwe]" 2>&1
         echo '  -c: critical threshold (percentage)'
         echo '  -w: warning threshold (percentage)'
         echo '  -e: email address to send the report'
@@ -13,38 +19,33 @@ function parameter {
         exit 1
 }
 
-#if [[ $# -eq ]]; then
-#	echo "0 arguments provided"
-#	parameter
-#	exit 1
-#fi
 
-# Define paremeters
+# Define parameters
 
-optstring=":cwe"
-
-while getopts ${optstring} arg; do
-  case ${arg} in
+while getopts :c:w:e: arg; do
+  case $arg in
 	c)
-	  echo "Critical Threshhold: "
-	  ;;
+	  critical="$OPTARG";;
 	w)
-	  echo "Warning Threshhold: "
-	  ;;
+	  warning="$OPTARG";;
 	e)
-  	  echo "Email Address: "
-	  ;;
-	?)
-	  echo "Invalid parameter/s: -${OPTARG}."
-	  echo
+  	  email="$OPTARG";;
+	\?) #if input does not match getops options
+	  echo "Invalid option."
 	  parameter
-	  exit 2
-	  ;;
+	  exit 1 ;;
    esac
 done
+shift $((OPTIND -1))
 
-free
 
-TOTAL_MEMORY=$(free  | grep Mem: | awk '{ printf("TOTAL MEMORY:" $2) }')
 
-echo $TOTAL_MEMORY
+if [ -z "$critical" ] || [ -z "$warning" ] || [ -z "$email" ]; then #if no parameter provided
+	echo "None or incomplete parameter/s provided" >&2
+	parameter
+else
+	printf "Critical Threshhold: %s\n" "$critical"
+	printf "Warning Threshhold: %s\n" "$warning"
+	printf "Email: %s\n" "$email"
+	# memory_status
+fi
