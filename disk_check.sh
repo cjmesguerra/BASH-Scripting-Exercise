@@ -36,7 +36,7 @@ elif [ "$critical" -lt "$warning" ]; then
 	echo "Critical threshold must always be greater than warning threshold." >&2
 else	
 	echo ""
-	DISK_PARTITION=$( df -P |awk -v ct=$critical '0 + $5 >= ct {print 0 + $5}')
+	DISK_PARTITION=$( df -P |awk -v ct=$critical -v wt=$warning '(0 + $5 >= ct) || (0 + $5 >= wt) {print "Capacity of " $1 " is above given threshold (" 0 + $5 " / (" wt "-" ct "))"}')
 	echo "$DISK_PARTITION"
 	
 	echo ""
@@ -47,7 +47,7 @@ else
 		MESSAGE="/tmp/Mail.out"
 		TO="$email"
 		
-		echo "Disk Usage: " >> $MESSAGE
+		echo "$DISK_PARTITION" >> $MESSAGE
 		echo "" >> $MESSAGE
 		mail -s "$SUBJECT" "$TO" < $MESSAGE
 		rm /tmp/Mail.out	
@@ -59,15 +59,14 @@ else
 		MESSAGE="/tmp/Mail.out"
 		TO="$email"
 		
-		echo "Disk Usage: " >> $MESSAGE
+		echo "$DISK_PARTITION" >> $MESSAGE
 		echo "" >> $MESSAGE
 		mail -s "$SUBJECT" "$TO" < $MESSAGE
 		rm /tmp/Mail.out	
 		exit 1
 
 	else
-		echo "Used Disk Usage is less than given threshold parameters."
-		echo "$critical & $warning"
+		echo "No disk partitions meet the threshold parameters."
 		exit 0
 	fi
 	
