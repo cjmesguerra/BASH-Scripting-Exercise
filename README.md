@@ -1,4 +1,5 @@
 SSI System Engineer Exercise
+
 Linux Distribution: CentOS 7 Minimal
 
 BASH Scripting
