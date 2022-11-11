@@ -36,7 +36,7 @@ elif [ "$critical" -lt "$warning" ]; then
 	echo "Critical threshold must always be greater than warning threshold." >&2
 else	
 	echo ""
-	DISK_PARTITION=$( df -P |awk '0 + $5  >= 60  {print $1"\t"$5}')
+	DISK_PARTITION=$( df -P |awk -v ct=$critical '0 + $5 >= ct {print 0 + $5}')
 	echo "$DISK_PARTITION"
 	
 	echo ""
