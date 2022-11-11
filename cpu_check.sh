@@ -38,7 +38,6 @@ else
 	echo ""
 	CPU_UTIL_PERCENT=$(top -b -n 1 | grep "Cpu(s)" | \sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | \awk '{print 100 - $1"%"}')
 	CPU_UTIL=${CPU_UTIL_PERCENT%.*}
-#$(top -b -n 1 | grep "Cpu(s)" | \sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | \awk '{printf "%.0f\n", 100 - $1}')
 
 	echo "CPU Utilization: $CPU_UTIL_PERCENT"
 	echo ""
