@@ -50,30 +50,41 @@ else
 	echo ""
 
 	if [ "$MEMORY_USAGE" -ge "$critical" ]; then
-		echo "Memory Usage has reached given CRITICAL THRESHOLD($critical). Forwarding status to email"
-		SUBJECT="Memory Usage on $(hostname) at $(date) has reached CRITICAL THRESHOLD"
+		echo "Memory Usage has reached given CRITICAL THRESHOLD ($critical). Forwarding status to email"
+		SUBJECT="$(date +"%Y%m%d %H:%M") memory_check - critical"
 		MESSAGE="/tmp/Mail.out"
 		TO="$email"
 		
 		echo "$MEMORY_IN_USE" >> $MESSAGE
+		echo "" >> $MESSAGE
+		echo "================================" >> $MESSAGE
+		echo "Top 10 Most Consuming Processes" >> $MESSAGE
+		echo "================================" >> $MESSAGE
+		echo "$(top -b -o +%MEM | head -n 20)" >> $MESSAGE
+		echo "" >> $MESSAGE
 		mail -s "$SUBJECT" "$TO" < $MESSAGE
 		rm /tmp/Mail.out	
-
 		exit 2
+
 	elif [ "$MEMORY_USAGE" -ge "$warning" ] && [ "$MEMORY_USAGE" -lt "$critical" ]; then
-		echo "Memory Usage has reached given WARNING THRESHOLD($warning). Forwarding status to email."
-		SUBJECT="Memory Usage on $(hostname) at $(date) has reached WARNING THRESHOLD" 
+		echo "Memory Usage has reached given WARNING THRESHOLD ($warning). Forwarding status to email."
+		SUBJECT="$(date +"%Y%m%d %H:%M") memory_check - warning" 
 		MESSAGE="/tmp/Mail.out"
 		TO="$email"
 		
 		echo "$MEMORY_IN_USE" >> $MESSAGE
+		echo "" >> $MESSAGE
+		echo "================================" >> $MESSAGE
+		echo "Top 10 Most Consuming Processes" >> $MESSAGE
+		echo "================================" >> $MESSAGE
+		echo "$(top -b -o +%MEM | head -n 20)" >> $MESSAGE
+		echo "" >> $MESSAGE
 		mail -s "$SUBJECT" "$TO" < $MESSAGE
 		rm /tmp/Mail.out	
-
 		exit 1
+
 	else
-		echo "Memory Usage of $MEMORY_USAGE is under given threshold parameters of $critical and $warning"
-		echo "Not sending to $email"
+		echo "Current Memory Usage is under given threshold parameters."
 		exit 0
 	fi
 	
