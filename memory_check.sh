@@ -60,7 +60,7 @@ else
 		echo "================================" >> $MESSAGE
 		echo "Top 10 Most Consuming Processes" >> $MESSAGE
 		echo "================================" >> $MESSAGE
-		echo "$(top -b -o +%MEM | head -n 20)" >> $MESSAGE
+		echo "$(top -b -o +%MEM | head )" >> $MESSAGE
 		echo "" >> $MESSAGE
 		mail -s "$SUBJECT" "$TO" < $MESSAGE
 		rm /tmp/Mail.out	
