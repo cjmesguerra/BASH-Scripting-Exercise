@@ -43,9 +43,11 @@ shift $((OPTIND -1))
 if [ -z "$critical" ] || [ -z "$warning" ] || [ -z "$email" ]; then #if no parameter provided
 	echo "None or incomplete parameter/s provided" >&2
 	parameter
+elif [ "$critical" -lt "$warning" ]; then
+	echo "Critical threshold must always be greater than warning threshold." >&2
 else
-	printf "Critical Threshhold: %s\n" "$critical"
-	printf "Warning Threshhold: %s\n" "$warning"
+	printf "Critical Threshold: %s\n" "$critical"
+	printf "Warning Threshold: %s\n" "$warning"
 	printf "Email: %s\n" "$email"
-	# memory_status
+	#memory_status
 fi
